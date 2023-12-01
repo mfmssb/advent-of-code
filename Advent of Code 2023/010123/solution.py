@@ -54,8 +54,6 @@ NUMERALS_STR = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 NUM_DICT = dict(zip(NUMERALS_SPELLED, NUMERALS_STR))
 
-NUM_DICT
-
 calibration_nums = []
 
 for line in d:
@@ -102,9 +100,3 @@ for c in calibration_nums:
 # ## Løsning
 
 sum(calibration_nums_fixed)
-
-sum(calibration_nums_fixed)
-
-# ## Løsning
-
-
