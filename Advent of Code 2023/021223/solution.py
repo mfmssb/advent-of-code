@@ -89,11 +89,6 @@ for game in d:
     if check_balls_in_game_is_possible(game_max):
         sum_ids += game_id
 
-print(game)
-print(game_id)
-print(game_sets)
-print(game_max)
-
 # ## Løsning
 
 print(sum_ids)
