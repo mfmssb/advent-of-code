@@ -72,3 +72,27 @@ for i in range(d[0]):
 # ## Løsning
 
 count
+
+# ## Alternativ løsning uten loop
+
+# +
+record_time = d[0]
+run_distance = d[1]
+
+print(record_time)
+print(run_distance)
+# -
+
+import math
+
+
+def solution_roots(r, d):
+    discriminant = math.sqrt(r**2-4*d)
+    x1 = r/2 + discriminant/2
+    x2 = r/2 - discriminant/2
+    return x1, x2
+
+
+sols = solution_roots(record_time, run_distance)
+
+math.floor(max(sols)) - math.ceil(min(sols))
