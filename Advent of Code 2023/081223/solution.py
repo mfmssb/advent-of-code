@@ -20,22 +20,23 @@ ins = d[0]
 nodes = d[2:]
 # -
 
+# Split the graph into "L" and "R".
 graph = {
     'L': {},
     'R': {},
 }
 
 for node in nodes:
-    key = node.split(" =")[0]
+    _from = node.split(" =")[0]
     left = node.split("= (")[1].split(",")[0]
     right = node.split("= (")[1].split(",")[1].replace(")", "").strip()
     
-    graph['L'][key] = left
-    graph['R'][key] = right
+    graph['L'][_from] = left
+    graph['R'][_from] = right
 
-n = 'AAA'
+start_node = 'AAA'
 count = 0
-while n != 'ZZZ' and count < 100000:
+while start_node != 'ZZZ' and count < 100000:
     for i in ins:
         n = graph[i][n]
         count += 1
@@ -69,17 +70,20 @@ for node in nodes:
     graph['L'][key] = left
     graph['R'][key] = right
 
-nodes[0].split(" =")[0]
-
+# +
 start_nodes = [a.split(" =")[0] for a in nodes if a.split(" =")[0].endswith("A")]
 end_nodes = [z.split(" =")[0] for z in nodes if z.split(" =")[0].endswith("Z")]
 
-start_nodes
+print("Start nodes:\t", start_nodes)
+print("End nodes:\t", end_nodes)
+# -
 
-end_nodes
+# The key insight here is that each ghost must somewhere in its path go into a loop (this can be observed by taking more than `len(nodes)` steps).
+#
+# In the next code snippet I search for where in their paths each ghost start over in the loop. I also find which index it goes back to (`cycles_start`)
 
-cycles={}
-cycles_start={}
+cycles = {}
+cycles_start = {}
 for j in range(len(start_nodes)):
     visited_nodes = []
     node_pos = start_nodes[j]
@@ -95,15 +99,15 @@ for j in range(len(start_nodes)):
     cycles[j] = visited_nodes
     cycles_start[j] = [i for i, x in enumerate(visited_nodes) if x == node_pos][0]
 
-cycles_start
-
+# Calculate the length of cycles, and subtract the cycle start index
+# The cycle start index is conveniently 1 for each ghost.
 cycles_length = [len(v) for k, v in cycles.items()]
-
-cycles_length = [x-cycles_start[i] for i, x in enumerate(cycles_length)]
-
-cycles_length
+cycles_length = [x-cycles_start[i] for i, x in enumerate(cycles_length)]  # The length of each cycle
 
 # +
+# We find the least common multiple (minste felles multiplum) of the cycles length
+# to determine how many steps each ghost must take to line up at the same spot
+
 from math import gcd
 from functools import reduce
 
@@ -113,7 +117,11 @@ def find_lcm(numbers):
     return reduce(lcm, numbers)
 
 def find_n_values(numbers):
-    """ Find the n_i values for each number in the list. """
+    """
+    Find the n_i values for each number in the list.
+    n_i is the number of steps each ghost must take to line up with the other cycles.
+    This is not needed for the puzzle, but I used it to check the logic.
+    """
     lcm_value = find_lcm(numbers)
     n_values = [lcm_value // number for number in numbers]
     return n_values, lcm_value
@@ -123,46 +131,9 @@ n_values, lcm_value = find_n_values(cycles_length)
 n_values, lcm_value
 # -
 
-for i in range(len(cycles_length)):
-    print(cycles_length[j]*n_values[j])
-
-len(ins) * 36445519589
-
-
-
-visited_nodes
-
-
-
-# +
-# count = 0
-# visited_nodes = []
-# node_pos = start_nodes[4]
-# while count < 1000:
-#     visited_nodes.append(node_pos)
-#     for i in ins:
-#         node_pos = graph[i][node_pos]
-
-#     if node_pos in visited_nodes:
-#         break
-    
-    
-#     count += 1
-# -
-
-# count = 0
-# while count < 100000:
-#     for i in ins:
-#         node_pos = [graph[i][n] for n in node_pos]      
-#         count += 1
-        
-
-
-
-
-
-
-
 # ## Løsning
 
-
+# The ghosts must do these cycles for every instruction list.
+len(ins) * lcm_value
+# In the step after this they will all be at the cycle start index,
+# so this is the "last" step before doing it all over.
