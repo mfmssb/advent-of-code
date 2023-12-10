@@ -47,7 +47,7 @@ def next_number(l: list):
     return next_num
 
 
-# %%time
+# %%timeit
 sum_of_extrapolated_values = 0
 for prog in p:
     sum_of_extrapolated_values += next_number(
@@ -82,7 +82,7 @@ def prec_number(l: list):
     return prec_num
 
 
-# %%time
+# %%timeit
 sum_of_preceding_extrapolated_values = 0
 for prog in p:
     sum_of_preceding_extrapolated_values += prec_number(

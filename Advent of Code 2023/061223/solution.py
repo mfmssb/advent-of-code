@@ -96,3 +96,5 @@ def solution_roots(r, d):
 sols = solution_roots(record_time, run_distance)
 
 math.floor(max(sols)) - math.ceil(min(sols))
+
+
