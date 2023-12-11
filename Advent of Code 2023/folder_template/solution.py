@@ -5,25 +5,27 @@ for fil in filnavn:
         data.append(file.read())
 
 print("Størrelsen på inndata:")
-for x in data:
-    print(len(x))
+for i, x in enumerate(data):
+    print(i, len(x))
 
-# # Oppgave 1
+# # Problem 1
 
-# ## Mellomregning
+d = data[0].split("\n")
 
-
-
-# ## Løsning
+# ## Intermediate Steps 1
 
 
 
-# # Oppgave 2
-
-# ## Mellomregning
+# ## Solution 1
 
 
 
-# ## Løsning
+# # Problem 2
+
+# ## Intermediate Steps 1
+
+
+
+# ## Solution 2
 
 
