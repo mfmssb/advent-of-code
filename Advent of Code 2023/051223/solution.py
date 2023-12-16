@@ -47,7 +47,7 @@ def main1():
 
 # ## Løsning
 
-# %%time
+# # %%timeit
 min(main1())
 
 # # Oppgave 2
@@ -62,6 +62,38 @@ seeds = d[0].replace("seeds: ", "").split(" ")
 seeds = [int(x) for x in seeds]
 
 maps = [[[int(num) for num in text.split(" ")] for text in x.replace(" map:", "").split("\n")[1:]] for x in maps]
+
+seedsr = []
+for i, s in enumerate(seeds):
+    if i % 2 == 1:
+        seedsr.append(seeds[i-1] + s)  # interval inclusive from left, not inclusive from right
+    else:
+        seedsr.append(s)
+
+seedsr
+
+maps
+
+m = maps[0]
+
+m
+
+x1, x2 = seedsr[0], seedsr[1]
+
+x1, x2
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def map_seed_range_from_rule(line: list, lookup_range: list) -> list:
