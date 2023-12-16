@@ -10,7 +10,7 @@ for i, x in enumerate(data):
 
 # # Problem 1
 
-d = data[2].split("\n")
+d = data[0].split("\n")
 d = [[x for x in y] for y in d]
 
 energized = [["." for x in y] for y in d]
@@ -53,26 +53,23 @@ class Beam:
         self.vel = (vx, vy)
         self.active = True
         self.visited = visited  # Set to store visited positions with velocity
-    
+
     def __str__(self):
         return f"Position: {self.pos}, Velocity: {self.vel}, Active: {self.active}"
-    
+
     def take_step(self, board):
-        next_pos = (
-            self.pos[0] + self.vel[0],
-            self.pos[1] + self.vel[1]
-        )
+        next_pos = (self.pos[0] + self.vel[0], self.pos[1] + self.vel[1])
         self.visited.add((self.pos, self.vel))
         self.pos = next_pos
         if (next_pos, self.vel) in self.visited:
             self.deactivate()
             return
         self.validate_pos(board)
-    
+
     def validate_pos(self, board):
         if not valid_pos(board, self.pos[0], self.pos[1]):
             self.deactivate()
-    
+
     def validate_vel(self):
         if self.vel[0] != 0 and self.vel[1] != 0:
             raise ValueError("Beam has diagonal movement")
@@ -80,46 +77,54 @@ class Beam:
             raise ValueError("Beam has no movement")
         if self.vel[0] > 1 or self.vel[1] > 1:
             raise ValueError("Velocity greater than 1")
-    
+
     def deactivate(self):
         self.active = False
-        
+
     def change_dir(self, mirror_type):
         x = self.pos[0]
         y = self.pos[1]
 
         vx = self.vel[0]
         vy = self.vel[1]
-        
-        if mirror_type not in ['.', '|', '\\', '/', '-']:
+
+        if mirror_type not in [".", "|", "\\", "/", "-"]:
             raise ValueError("Not valid mirror type:", mirror_type)
 
-        if mirror_type == '.':
-            return (0, 0)
-        
+        if mirror_type == ".":
+            return (0, 0, 0, 0)
+
         # Split cases
         if (vx == 1 or vx == -1) and (mirror_type == "|"):
-            self.vel = (0, 1)
-            return (0, -1)  # Make new beam with this direction
+            self.deactivate()
+            return (0, -1, 0, 1)  # Make new beam with these velocities
 
         if (vy == 1 or vy == -1) and (mirror_type == "-"):
-            self.vel = (1, 0)
-            return (-1, 0)  # Make new beam with this direction
+            self.deactivate()
+            return (-1, 0, 1, 0)  # Make new beam with these velocities
 
         # Rotate direction
         if mirror_type == "\\":
-            if vx == 1: self.vel = (0, 1)
-            if vx == -1: self.vel = (0, -1)
-            if vy == 1: self.vel = (1, 0)
-            if vy == -1: self.vel = (-1, 0)
+            if vx == 1:
+                self.vel = (0, 1)
+            if vx == -1:
+                self.vel = (0, -1)
+            if vy == 1:
+                self.vel = (1, 0)
+            if vy == -1:
+                self.vel = (-1, 0)
 
         if mirror_type == "/":
-            if vx == 1: self.vel = (0, -1)
-            if vx == -1: self.vel = (0, 1)
-            if vy == 1: self.vel = (-1, 0)
-            if vy == -1: self.vel = (1, 0)
-        
-        return (0, 0)  # Don't make new beam
+            if vx == 1:
+                self.vel = (0, -1)
+            if vx == -1:
+                self.vel = (0, 1)
+            if vy == 1:
+                self.vel = (-1, 0)
+            if vy == -1:
+                self.vel = (1, 0)
+
+        return (0, 0, 0, 0)  # Don't make new beam
 
 
 beams = [Beam(0, 0, 1, 0)]
@@ -141,10 +146,11 @@ while(beams):
         energized[y][x] = "#"  # Update energized matrix
         
         mirror_type = d[y][x]
-        (new_beam_vx, new_beam_vy) = beam.change_dir(mirror_type)
+        (new_beam1_vx, new_beam1_vy, new_beam2_vx, new_beam2_vy) = beam.change_dir(mirror_type)
 
-        if (new_beam_vx, new_beam_vy) != (0, 0):
-            new_beams.append(Beam(x, y, new_beam_vx, new_beam_vy, beam.visited))
+        if (new_beam1_vx, new_beam1_vy, new_beam2_vx, new_beam2_vy) != (0, 0, 0, 0):
+            new_beams.append(Beam(x, y, new_beam1_vx, new_beam1_vy, beam.visited))
+            new_beams.append(Beam(x, y, new_beam2_vx, new_beam2_vy, beam.visited))
 
     beams.extend(new_beams)
 
@@ -153,9 +159,6 @@ while(beams):
         beam.take_step(d)
         beam.validate_vel()  # check if velocity is as expected
 
-    # ## Remove inactive beams
-    # beams = [beam for beam in beams if beam.active]
-     
     steps += 1
     
     if verbose:
@@ -169,13 +172,7 @@ while(beams):
             print(("").join(x))
         print(number_of_energized_cells(energized))
 
-steps
-
-e = [[str(x) for x in y] for y in energized]
-
-e
-
-[("").join(x) for x in e]
+print(steps)
 
 # ## Solution 1
 
