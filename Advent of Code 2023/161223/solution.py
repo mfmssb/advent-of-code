@@ -10,10 +10,8 @@ for i, x in enumerate(data):
 
 # # Problem 1
 
-d = data[0].split("\n")
+d = data[1].split("\n")
 d = [[x for x in y] for y in d]
-
-energized = [["." for x in y] for y in d]
 
 
 # ## Intermediate Steps 1
@@ -37,33 +35,20 @@ def valid_pos(matrix, x, y):
     return (0 <= x < max_x) and (0 <= y < max_y)
 
 
-def make_new_beam(beams, pos, vel):
-    new_ind = max(beams.keys()) + 1
-    beams[new_ind] = {
-        'active': True,
-        'pos': pos,
-        'vel': vel,
-    }
-    return beams
-
-
 class Beam:
-    def __init__(self, x, y, vx, vy, visited=set()):
+    def __init__(self, x, y, vx, vy):
         self.pos = (x, y)
         self.vel = (vx, vy)
         self.active = True
-        self.visited = visited  # Set to store visited positions with velocity
 
     def __str__(self):
         return f"Position: {self.pos}, Velocity: {self.vel}, Active: {self.active}"
 
     def take_step(self, board):
-        next_pos = (self.pos[0] + self.vel[0], self.pos[1] + self.vel[1])
-        self.visited.add((self.pos, self.vel))
+        next_pos = (self.pos[0] + self.vel[0],
+                    self.pos[1] + self.vel[1])
         self.pos = next_pos
-        if (next_pos, self.vel) in self.visited:
-            self.deactivate()
-            return
+
         self.validate_pos(board)
 
     def validate_pos(self, board):
@@ -124,68 +109,140 @@ class Beam:
             if vy == -1:
                 self.vel = (1, 0)
 
-        return (0, 0, 0, 0)  # Don't make new beam
+        return (0, 0, 0, 0)  # Don't make new beams
 
 
-beams = [Beam(0, 0, 1, 0)]
+def remove_overlapping_beams(beams):
+    unique_states = set()
+    unique_beams = []
 
-verbose = True
+    for beam in beams:
+        state = (beam.pos, beam.vel)
+        if state not in unique_states:
+            unique_beams.append(beam)
+            unique_states.add(state)
+
+    return unique_beams
+
+
+def run_loop(d, _x, _y, _vx, _vy, threshold, verbose = False):  
+    beams = [Beam(_x, _y, _vx, _vy)]
+    
+    energized = [["." for x in y] for y in d]
+    
+    steps_since_new_energized_cell = 0
+    while(beams and steps_since_new_energized_cell <= threshold):
+        state_before = number_of_energized_cells(energized)
+        ## Remove inactive beams
+        beams = [beam for beam in beams if beam.active]
+        beams = remove_overlapping_beams(beams)
+
+        ## Change beam velocity and make new beams when split
+        new_beams = []
+        for beam in beams:
+            x = beam.pos[0]
+            y = beam.pos[1]
+
+            energized[y][x] = "#"  # Update energized matrix
+
+            mirror_type = d[y][x]
+            (new_beam1_vx, new_beam1_vy, new_beam2_vx, new_beam2_vy) = beam.change_dir(mirror_type)
+
+            if (new_beam1_vx, new_beam1_vy, new_beam2_vx, new_beam2_vy) != (0, 0, 0, 0):
+                new_beams.append(Beam(x, y, new_beam1_vx, new_beam1_vy))
+                new_beams.append(Beam(x, y, new_beam2_vx, new_beam2_vy))
+
+        beams.extend(new_beams)
+
+        ## Update beam position
+        for beam in beams:
+            beam.take_step(d)
+            beam.validate_vel()  # check if velocity is as expected
+
+        state_after = number_of_energized_cells(energized)
+        if state_after > state_before:
+            steps_since_new_energized_cell = 0
+        else:
+            steps_since_new_energized_cell += 1
+            
+        if verbose:
+            for beam in beams:
+                print(beam)
+
+            for x in d:
+                print(("").join(x))
+            print()
+            for x in energized:
+                print(("").join(x))
+            print(number_of_energized_cells(energized))
+            
+    return state_after
+
 
 # %%time
-steps = 0
-while(beams):
-    ## Remove inactive beams
-    beams = [beam for beam in beams if beam.active]
-
-    ## Change beam velocity and make new beams when split
-    new_beams = []
-    for beam in beams:
-        x = beam.pos[0]
-        y = beam.pos[1]
-
-        energized[y][x] = "#"  # Update energized matrix
-        
-        mirror_type = d[y][x]
-        (new_beam1_vx, new_beam1_vy, new_beam2_vx, new_beam2_vy) = beam.change_dir(mirror_type)
-
-        if (new_beam1_vx, new_beam1_vy, new_beam2_vx, new_beam2_vy) != (0, 0, 0, 0):
-            new_beams.append(Beam(x, y, new_beam1_vx, new_beam1_vy, beam.visited))
-            new_beams.append(Beam(x, y, new_beam2_vx, new_beam2_vy, beam.visited))
-
-    beams.extend(new_beams)
-
-    ## Update beam position
-    for beam in beams:
-        beam.take_step(d)
-        beam.validate_vel()  # check if velocity is as expected
-
-    steps += 1
-    
-    if verbose:
-        for beam in beams:
-            print(beam)
-
-        for x in d:
-            print(("").join(x))
-        print()
-        for x in energized:
-            print(("").join(x))
-        print(number_of_energized_cells(energized))
-
-print(steps)
+ans1 = run_loop(d, _x=0, _y=0, _vx=1, _vy=0, threshold=10)
 
 # ## Solution 1
 
-# Tried: 6271
-
-print(number_of_energized_cells(energized))
+print(ans1)
 
 # # Problem 2
 
 # ## Intermediate Steps 2
 
+# +
+max_x = len(d[0]) - 1
+max_y = len(d) - 1
 
+starting_positions = []
+
+# +
+# Top edge (moving downward)
+for x in range(max_x):
+    starting_positions.append((x, 0, 0, 1))
+
+# Bottom edge (moving upward)
+for x in range(max_x):
+    starting_positions.append((x, max_y, 0, -1))
+
+# Left edge (moving rightward)
+for y in range(max_y):
+    starting_positions.append((0, y, 1, 0))
+
+# Right edge (moving leftward)
+for y in range(max_y):
+    starting_positions.append((max_x, y, -1, 0))
+
+# Special cases for corners if needed
+# Top-left corner
+starting_positions.append((0, 0, 1, 0))  # Rightward
+starting_positions.append((0, 0, 0, 1))  # Downward
+
+# Top-right corner
+starting_positions.append((max_x, 0, -1, 0))  # Leftward
+starting_positions.append((max_x, 0, 0, 1))   # Downward
+
+# Bottom-left corner
+starting_positions.append((0, max_y, 1, 0))   # Rightward
+starting_positions.append((0, max_y, 0, -1))  # Upward
+
+# Bottom-right corner
+starting_positions.append((max_x, max_y, -1, 0))  # Leftward
+starting_positions.append((max_x, max_y, 0, -1))  # Upward
+# -
+
+print(len(starting_positions))
+
+# %%time
+energized_scores = []
+_max = 0
+for (x, y, vx, vy) in starting_positions:
+    score = run_loop(d, _x=x, _y=y, _vx=vx, _vy=vy, threshold=2)
+    if score > _max:
+        _max = score
+    print(x, y, vx, vy, "\t", score, _max)
+    energized_scores.append(score)
 
 # ## Solution 2
 
-
+max(energized_scores)
