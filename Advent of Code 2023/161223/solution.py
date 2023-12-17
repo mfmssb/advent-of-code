@@ -17,7 +17,7 @@ d = [[x for x in y] for y in d]
 # ## Intermediate Steps 1
 
 def number_of_energized_cells(matrix):
-    """ The matrix contains 0s and 1s indicating a cell is energized or not """
+    """ The matrix contains "." and "#" indicating a cell is energized or not """
     counter = 0
     for y in matrix:
         for x in y:
@@ -29,7 +29,7 @@ def number_of_energized_cells(matrix):
 
 
 def valid_pos(matrix, x, y):
-    """ Check if new beam position is valid """
+    """ Check if beam position is valid in matrix"""
     max_x = len(matrix[0])
     max_y = len(matrix)
     return (0 <= x < max_x) and (0 <= y < max_y)
@@ -45,9 +45,8 @@ class Beam:
         return f"Position: {self.pos}, Velocity: {self.vel}, Active: {self.active}"
 
     def take_step(self, board):
-        next_pos = (self.pos[0] + self.vel[0],
+        self.pos = (self.pos[0] + self.vel[0],
                     self.pos[1] + self.vel[1])
-        self.pos = next_pos
 
         self.validate_pos(board)
 
@@ -67,6 +66,9 @@ class Beam:
         self.active = False
 
     def change_dir(self, mirror_type):
+        if mirror_type == ".":
+            return (0, 0, 0, 0)
+        
         x = self.pos[0]
         y = self.pos[1]
 
@@ -76,53 +78,31 @@ class Beam:
         if mirror_type not in [".", "|", "\\", "/", "-"]:
             raise ValueError("Not valid mirror type:", mirror_type)
 
-        if mirror_type == ".":
-            return (0, 0, 0, 0)
+        
 
         # Split cases
         if (vx == 1 or vx == -1) and (mirror_type == "|"):
             self.deactivate()
-            return (0, -1, 0, 1)  # Make new beam with these velocities
+            return (0, -1, 0, 1)  # Make new beams with these velocities
 
         if (vy == 1 or vy == -1) and (mirror_type == "-"):
             self.deactivate()
-            return (-1, 0, 1, 0)  # Make new beam with these velocities
+            return (-1, 0, 1, 0)  # Make new beams with these velocities
 
         # Rotate direction
         if mirror_type == "\\":
-            if vx == 1:
-                self.vel = (0, 1)
-            if vx == -1:
-                self.vel = (0, -1)
-            if vy == 1:
-                self.vel = (1, 0)
-            if vy == -1:
-                self.vel = (-1, 0)
+            if vx == 1: self.vel = (0, 1)
+            if vx == -1: self.vel = (0, -1)
+            if vy == 1: self.vel = (1, 0)
+            if vy == -1: self.vel = (-1, 0)
 
         if mirror_type == "/":
-            if vx == 1:
-                self.vel = (0, -1)
-            if vx == -1:
-                self.vel = (0, 1)
-            if vy == 1:
-                self.vel = (-1, 0)
-            if vy == -1:
-                self.vel = (1, 0)
+            if vx == 1: self.vel = (0, -1)
+            if vx == -1: self.vel = (0, 1)
+            if vy == 1: self.vel = (-1, 0)
+            if vy == -1: self.vel = (1, 0)
 
         return (0, 0, 0, 0)  # Don't make new beams
-
-
-def remove_overlapping_beams(beams):
-    unique_states = set()
-    unique_beams = []
-
-    for beam in beams:
-        state = (beam.pos, beam.vel)
-        if state not in unique_states:
-            unique_beams.append(beam)
-            unique_states.add(state)
-
-    return unique_beams
 
 
 def run_loop(d, _x, _y, _vx, _vy, threshold, verbose = False):  
@@ -132,10 +112,11 @@ def run_loop(d, _x, _y, _vx, _vy, threshold, verbose = False):
     
     steps_since_new_energized_cell = 0
     while(beams and steps_since_new_energized_cell <= threshold):
+        
         state_before = number_of_energized_cells(energized)
+        
         ## Remove inactive beams
         beams = [beam for beam in beams if beam.active]
-        beams = remove_overlapping_beams(beams)
 
         ## Change beam velocity and make new beams when split
         new_beams = []
@@ -154,7 +135,7 @@ def run_loop(d, _x, _y, _vx, _vy, threshold, verbose = False):
 
         beams.extend(new_beams)
 
-        ## Update beam position
+        ## Update beam positions
         for beam in beams:
             beam.take_step(d)
             beam.validate_vel()  # check if velocity is as expected
@@ -180,7 +161,7 @@ def run_loop(d, _x, _y, _vx, _vy, threshold, verbose = False):
 
 
 # %%time
-ans1 = run_loop(d, _x=0, _y=0, _vx=1, _vy=0, threshold=10)
+ans1 = run_loop(d, _x=0, _y=0, _vx=1, _vy=0, threshold=2)
 
 # ## Solution 1
 
@@ -240,7 +221,7 @@ for (x, y, vx, vy) in starting_positions:
     score = run_loop(d, _x=x, _y=y, _vx=vx, _vy=vy, threshold=2)
     if score > _max:
         _max = score
-    print(x, y, vx, vy, "\t", score, _max)
+        print(x, y, vx, vy, "\t", score, _max)
     energized_scores.append(score)
 
 # ## Solution 2
