@@ -4,9 +4,9 @@ for fil in filnavn:
     with open(fil, 'r') as file:
         data.append(file.read())
 
-print("Størrelsen på inndata:")
+print("** Inndata størrelse **")
 for i, x in enumerate(data):
-    print(i, len(x))
+    print(f"data[{i}]: {len(x):8} tegn")
 
 # # Problem 1
 
