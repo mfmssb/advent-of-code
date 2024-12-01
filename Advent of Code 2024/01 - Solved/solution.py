@@ -36,81 +36,42 @@ def preprocess_data(data_in, sort_columns=True):
 
 def calculate_diff(df):
     df['diff'] = abs(df['left'] - df['right'])
-    return df
+    return df['diff'].sum()
 
+
+# %%timeit
+df = preprocess_data(data[1])
+ans = calculate_diff(df)
 
 # ## Solution 1
-
-# # %%timeit
-df = preprocess_data(data[1])
-calculate_diff(df)
-ans = df['diff'].sum()
 
 print(int(ans))
 
 
 # # Problem 2
 
-# ## Intermediate Steps 1
+# ## Intermediate Steps 2
 
 def calculate_score(df):
-    df['in_right'] = df['left'].isin(df['right'])
 
-    df_agg = df.groupby('left').agg(
-        num_times_in_right=('in_right', 'sum')
-    ).reset_index()
+    right_counts = df['right'].value_counts().reset_index()
     
-    df_agg['score'] = df_agg['left'] * df_agg['num_times_in_right'].apply(lambda x: x**2)
+    final = pd.merge(
+        df,
+        right_counts,
+        left_on='left',
+        right_on='right',
+        how='inner'
+    )
     
-    return df_agg['score'].sum()
-
-
-
-data[0]
-
-df = preprocess_data(data[0], False)
-
-df
-
-unique_lefts_in_right = pd.DataFrame(
-    df[df['left']
-        .isin(df['right'])]['left']
-        .unique(),
-    columns=['unique_left']
-)
-
-right_counts = df['right'].value_counts().reset_index()
-
-right_counts
-
-final = pd.merge(
-    unique_lefts_in_right,
-    right_counts,
-    left_on='unique_left',
-    right_on='right',
-    how='inner'
-).drop(columns='right')
-
-final['score'] = final['unique_left'] * final['count'].apply(lambda x: x**2)
-
-final
-
-
-
-
-
+    final['score'] = final['left'] * final['count']
+    return final['score'].sum()
 
 
 # %%timeit
 df = preprocess_data(data[1])
 ans = calculate_score(df)
 
-ans = calculate_score(df)
-
 # ## Solution 2
 
-# 2193494
-
 print(int(ans))
-
-
