@@ -22,7 +22,7 @@ d = data[0].split("\n")
 
 # # Problem 2
 
-# ## Intermediate Steps 1
+# ## Intermediate Steps 2
 
 
 
