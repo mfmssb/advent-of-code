@@ -30,13 +30,16 @@ def read_mul_and_calculate(s: str) -> int:
     return int(split_s[0]) * int(split_s[1])
 
 
+def findall_muls(s: str) -> list:
+    pattern = r"mul[(]\d{1,3}[,]\d{1,3}[)]"
+    return re.findall(pattern, s)
+
+
 # +
 d = data[1]
 
-pattern = "mul[(]\d{1,3}[,]\d{1,3}[)]"
-mul_patterns = re.findall(pattern, d)
-
-multiplications = [read_mul_and_calculate(x) for x in mul_patterns]
+mul_patterns = findall_muls(d)
+multiplications = [read_mul_and_calculate(mul) for mul in mul_patterns]
 
 ans1 = sum(multiplications)
 # -
@@ -49,8 +52,33 @@ print(ans1)
 
 # ## Intermediate Steps 2
 
+# Fikk hjelp av ChatGPT til denne. Today I learned `re.finditer()` og `.group()`...
 
+# Prøvde først å splitte på `don't()`, ta vare på de første `mul()` og for hver undersekvens lete etter `do()` og hente etterfølgende `mul()`. Er fortsatt litt usikker på hvorfor dette feilet.
+
+d = data[1]
+
+pattern = r"do\(\)|don't\(\)|mul\(\d{1,3},\d{1,3}\)"
+
+instructions = re.finditer(pattern, d)
+
+enabled = True
+multiplications = []
+
+for instr in instructions:
+    s = instr.group()
+    if s == "do()":
+        enabled = True
+    elif s == "don't()":
+        enabled = False
+    elif s.startswith("mul(") and enabled:
+        result = read_mul_and_calculate(s)
+        multiplications.append(result)
+
+ans2 = sum(multiplications)
 
 # ## Solution 2
+
+print(ans2)
 
 
