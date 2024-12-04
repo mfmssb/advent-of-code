@@ -88,12 +88,39 @@ ans1 = search_all("XMAS", d)
 
 print(ans1)
 
+
 # # Problem 2
 
 # ## Intermediate Steps 2
 
+def search_x(grid: list, word = "MAS") -> int:
+    word_rev = word[::-1]
+    h = len(grid)
+    w = len(grid[0])
+    l = len(word)
 
+    count = 0
+    for y in range(h-l+1):
+        for x in range(w-l+1):
+            # check diagonal from top left to bottom right
+            check1 = ""
+            for i in range(l):
+                check1 += grid[y+i][x+i]
+            
+            check2 = ""
+            # check diagonal from top right to bottom left
+            for i in range(l):
+                check2 += grid[y+i][x+(l-1)-i]
+            
+            if (check1 in [word, word_rev]) & (check2 in [word, word_rev]):
+                count += 1
+    return count
+
+
+d = data[1].split("\n")
+
+ans2 = search_x(d)
 
 # ## Solution 2
 
-
+print(ans2)
