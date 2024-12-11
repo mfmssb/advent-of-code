@@ -87,8 +87,7 @@ for a_name, l in antenna_locations.items():
             mark_map(a2[0], a2[1], antinode_map)
 
 
-num_antinodes = sum([line.count("#") for line in antinode_map])
-ans1 = num_antinodes
+ans1 = sum([line.count("#") for line in antinode_map])
 
 # ## Solution 1
 
@@ -98,7 +97,9 @@ ans1
 
 # ## Intermediate Steps 2
 
-d = data[0].split("\n")
+import math
+
+d = data[1].split("\n")
 antinode_map = d[::]
 antennas = identify_antennas(d)
 antenna_locations = get_antenna_locations(antennas, d)
@@ -107,12 +108,20 @@ for a_name, l in antenna_locations.items():
     combs = list(combinations(l, 2))
     for comb in combs:
         p1, p2 = comb
-        v1 = vector_difference(p1, p2)
-        v2 = vector_scalar(-1, v1)
 
+        # Antennas are antinodes
+        mark_map(p1[0], p1[1], antinode_map)
+        mark_map(p2[0], p2[1], antinode_map)
+        
+        v1 = vector_difference(p1, p2)
+        # Scale v1
+        gcd = math.gcd(v1[0], v1[1])
+        v1 = vector_scalar(int(1/gcd), v1)
+        v2 = vector_scalar(-1, v1)
+        
         a1 = vector_add(p2, v2)
         a2 = vector_add(p1, v1)
-
+        
         while is_in_bounds(a1, d):
             mark_map(a1[0], a1[1], antinode_map)
             a1 = vector_add(a1, v2)
@@ -121,39 +130,10 @@ for a_name, l in antenna_locations.items():
             mark_map(a2[0], a2[1], antinode_map)
             a2 = vector_add(a2, v1)
 
-# +
-# num_antinodes = sum([line.count("#") for line in antinode_map])
-num_antinodes = 0
-for line in antinode_map:
-    print(num_antinodes)
-    num_antinodes += len(line) - line.count(".")
-
-ans2 = num_antinodes
-# -
 
 
 
-ans2
-
-antinode_map
-
-test = [
-    "##....#....#",
-    ".#.#....0...",
-    "..#.#0....#.",
-    "..##...0....",
-    "....0....#..",
-    ".#...#A....#",
-    "...#..#.....",
-    "#....#.#....",
-    "..#.....A...",
-    "....#....A..",
-    ".#........#.",
-    "...#......##"]
-
-sum([line.count("#") for line in test])
-
-antinode_map
+ans2 = sum([line.count("#") for line in antinode_map])
 
 # ## Solution 2
 
