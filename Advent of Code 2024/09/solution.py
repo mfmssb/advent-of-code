@@ -8,6 +8,7 @@ print("** Inndata størrelse **")
 for i, x in enumerate(data):
     print(f"data[{i}]: {len(x):8} tegn")
 
+
 # # Problem 1
 
 # The digits alternate between indicating the length of a file and the length of free space.
@@ -16,47 +17,18 @@ for i, x in enumerate(data):
 
 # ## Intermediate Steps 1
 
-
-
 def parse_diskmap(diskmap: str) -> list:
     unpack = []
     for i, num in enumerate(diskmap):
+        length = int(num)
         if i % 2 == 0:
-            datanum = int(num)
-            data_id = i // 2
-            unpack.extend([str(data_id)] * datanum)
+            # Filblokk
+            file_id = i // 2
+            unpack.extend([file_id] * length)
         else:
-            free_space = int(num)
-            unpack.extend(["."] * free_space)
-
+            # Fri plass
+            unpack.extend(["."] * length)
     return unpack
-
-
-def parse_diskmap(diskmap: str) -> list:
-    unpack = []
-    length = len(diskmap)
-
-    # Hvis lengden er partall, er alt jevnt fordelt.
-    # Hvis lengden er oddetall, vil siste tegn være en fil-lengde uten fri plass.
-    pairs_end = length - (1 if length % 2 == 1 else 0)
-
-    # Behandle alle komplette par (fil, fri plass)
-    for i in range(0, pairs_end, 2):
-        datanum = int(diskmap[i])
-        free_space = int(diskmap[i+1])
-        data_id = i // 2
-
-        unpack.extend([data_id] * datanum)
-        unpack.extend([-1] * free_space)
-
-    # Hvis vi har et oddetall antall tegn, betyr det at siste tegn er en fil-lengde uten fri plass
-    if length % 2 == 1:
-        datanum = int(diskmap[-1])
-        data_id = pairs_end // 2
-        unpack.extend([data_id] * datanum)
-
-    return unpack
-
 
 
 
@@ -73,58 +45,98 @@ def find_rightmost_non_dot(s: list) -> int:
     return j
 
 
-def find_first_dot(s: list) -> int:
-    for i, c in enumerate(s):
+def find_dot_from_index(s: list, from_index=0) -> int:
+    for i, c in enumerate(s[from_index:], start=from_index):
         if c == '.':
             return i
+    raise ValueError("No dots found")
 
 
-def calculate_checksum(s: str) -> int:
+def calculate_checksum(s: list) -> int:
     result = 0
     for i, c in enumerate(s):
         if c != ".":
-            result += i * int(c)
+            result += i * c
     return result
 
 
-def calculate_checksum(blocks: list) -> int:
-    result = 0
-    for pos, val in enumerate(blocks):
-        if val != -1:
-            result += pos * val
-    return result
+d = data[1].split("\n")[0]
 
-
-d = data[0].split("\n")[0]
-
-len(d)
-
-diskmap = parse_diskmap("123817263812763812763")
+diskmap = parse_diskmap(d)
 
 num_dots = diskmap.count(".")
 
-num_dots
-
 dot_tail = num_dots * ["."]
 
+# %%time
 while diskmap[-num_dots:] != dot_tail:
-    first_dot_i = find_first_dot(diskmap)
+    first_dot_i = find_dot_from_index(diskmap)
     rightmost_non_dot_j = find_rightmost_non_dot(diskmap)
     diskmap = swap_position(diskmap, first_dot_i, rightmost_non_dot_j)
 
-len(diskmap)
-
-calculate_checksum(''.join(diskmap))
+ans1 = calculate_checksum(diskmap)
 
 # ## Solution 1
 
+print(ans1)
 
 
 # # Problem 2
 
 # ## Intermediate Steps 2
 
+def file_indexes(s: list) -> tuple:
+    i = find_rightmost_non_dot(s)
+    file_id = s[i]
+    length = 1
+    while s[i-length] != file_id:
+        length += 1
+    return (i, length)
 
+
+def get_dot_length(s: list), from_index: int) -> tuple:
+    i = find_dot_from_index(s, from_index)
+    length = 1
+    while s[i+length] != ".":
+        length += 1
+    return (i, length)
+
+
+# +
+d = data[0].split("\n")[0]
+
+diskmap_raw = parse_diskmap(d)
+diskmap = diskmap_raw[::]
+num_dots = diskmap.count(".")
+dot_tail = num_dots * ["."]
+# -
+
+
+
+# %%time
+while diskmap[-num_dots:] != dot_tail:
+    dot_i = 0
+    cont = True
+    while (dot_i < len(diskmap) & cont):
+        (dot_i, length_dots) = get_dot_length(diskmap)
+        (fileindex_right, length_file) = file_indexes(diskmap)
+    
+        if length_dots >= length_file:
+            # swap positions
+            cont = False
+
+    
+    first_dot_i = find_first_dot(diskmap)
+    rightmost_non_dot_j = find_rightmost_non_dot(diskmap)
+    diskmap = swap_position(diskmap, first_dot_i, rightmost_non_dot_j)
+
+d
+
+diskmap_raw
+
+"".join([str(x) for x in diskmap_raw])
+
+"".join([str(x) for x in diskmap])
 
 # ## Solution 2
 
