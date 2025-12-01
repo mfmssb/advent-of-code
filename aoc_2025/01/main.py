@@ -37,14 +37,14 @@ def p1(data_path: str,
 
     current_dial_index = dial_start_index
     goal_count = 0
+    
     for r in data:
         direction = r[0]
         num_steps = int(r[1:])
-        current_dial_index = (
-            (current_dial_index + 
-             direction_mapping[direction] * num_steps)
-        % tot_dial_numbers)
+        num_steps_dir = direction_mapping[direction] * num_steps
+        current_dial_index = (current_dial_index + num_steps_dir) % tot_dial_numbers
         goal_count += 1 if current_dial_index == goal_index else 0
+    
     return goal_count
 
 
