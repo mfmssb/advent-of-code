@@ -72,7 +72,7 @@ def p2(data_path: str,
 
         new_index = current_dial_index + num_steps_remainder_dir
 
-        if current_dial_index != 0 and not 0 < new_index < 100:
+        if current_dial_index != 0 and not 0 < new_index < tot_dial_numbers:
             goal_count += 1
         
         current_dial_index = new_index % tot_dial_numbers
