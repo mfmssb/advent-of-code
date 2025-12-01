@@ -8,8 +8,23 @@ print("** Inndata størrelse **")
 for i, x in enumerate(data):
     print(f"data[{i}]: {len(x):8} tegn")
 
-
 # # Problem 1
+
+# ## Intermediate Steps 1
+
+DIRS = {
+    '^': ( 0, -1),
+    '>': ( 1,  0),
+    'v': ( 0,  1),
+    '<': (-1,  0),
+}
+ROTATE90 = {
+    '^': '>',
+    '>': 'v',
+    'v': '<',
+    '<': '^',
+}
+
 
 def locate_guard(d: list, guard_chars=['^', '>', 'v', '<']) -> (int, int, str):
     for y in range(H):
@@ -60,53 +75,51 @@ def take_step(d: list, guard: tuple, obstacle='#') -> (int, int, str):
     return (d_marked, (gx, gy, gdir))
 
 
-d = data[1].split("\n")
-
 # `d[y][x]` med origo øverst til venstre
+
+# +
+d = data[0].split("\n")
 
 H = len(d)
 W = len(d[0])
 
 mapd = d[::]
 
-DIRS = {
-    '^': ( 0, -1),
-    '>': ( 1,  0),
-    'v': ( 0,  1),
-    '<': (-1,  0),
-}
-ROTATE90 = {
-    '^': '>',
-    '>': 'v',
-    'v': '<',
-    '<': '^',
-}
-
 g = locate_guard(mapd)
+# -
 
 while is_in_bounds(mapd, g[0], g[1]):
     mapd, g = take_step(mapd, g)
 
-count = 0
-for line in mapd:
-    count += line.count("X")
-ans1 = count
-
-
-# ## Intermediate Steps 1
-
-print(ans1)
+ans1 = sum([line.count("X") for line in mapd])
 
 # ## Solution 1
 
-
+print(ans1)
 
 # # Problem 2
 
 # ## Intermediate Steps 2
 
-
+mapd
 
 # ## Solution 2
 
+mapd
 
+(gx, gy, gd) = locate_guard(new_map)
+
+gx, gy
+
+# For alle "X" i mapd som ikke er guard startpos:
+#
+#     - sett inn en obstacle "#" i new_map
+#     - gjør take_step uten å markere i kartet
+#     - lagre indeksene der vakten har gått med retning i en dict, med liste over retningene
+#     - sjekke om vakten har vært på posisjon i en spesiell retning før.
+#         - Dersom dette skjer, har vi funnet en loop og vi teller count +=1
+#     - gå til neste obstacle
+
+d
+
+new_map = d[::]
