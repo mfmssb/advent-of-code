@@ -62,31 +62,22 @@ def p2(data_path: str,
     for r in data:
         direction = r[0]
         num_steps = int(r[1:])
-        num_steps_dir = num_steps * direction_mapping[direction]
         
-        if num_steps_dir >= 0:
-            num_steps_dir_revolutions = math.floor(num_steps_dir / tot_dial_numbers)
-        else:
-            num_steps_dir_revolutions = math.ceil(num_steps_dir / tot_dial_numbers)
-        
-        goal_count += abs(num_steps_dir_revolutions)
-        current_dial_index = (current_dial_index + num_steps_dir) % tot_dial_numbers
+        num_steps_revolutions = math.floor(num_steps / tot_dial_numbers)
+        num_steps_remainder = num_steps - num_steps_revolutions * tot_dial_numbers
 
-        if not 0 <= current_dial_index + (num_steps_dir % tot_dial_numbers) < 100:
+        num_steps_remainder_dir = num_steps_remainder * direction_mapping[direction]
+         
+        goal_count += num_steps_revolutions
+
+        new_index = current_dial_index + num_steps_remainder_dir
+
+        if current_dial_index != 0 and not 0 < new_index < 100:
             goal_count += 1
         
-        print(r, goal_count, current_dial_index, num_steps_dir)
+        current_dial_index = new_index % tot_dial_numbers
     return goal_count
 
-p2(data_path="data/data0.txt",
-   tot_dial_numbers=100,
-   goal_index=0,
-   dial_start_index=50
-)
-
-# %%
-
-# %%
 
 # %%
 # %%timeit
@@ -97,4 +88,12 @@ p1(data_path="data/data1.txt",
 )
 
 # %%
-abs(-321)
+# %%timeit
+p2(
+    data_path="data/data1.txt",
+    tot_dial_numbers=100,
+    goal_index=0,
+    dial_start_index=50
+)
+
+# %%
