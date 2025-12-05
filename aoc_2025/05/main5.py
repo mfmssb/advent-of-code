@@ -1,4 +1,3 @@
-# %%
 from pathlib import Path
 from typing import Any
 
@@ -9,14 +8,14 @@ def parse_data(data_path: str) -> tuple[list[str], list[str]]:
     intervals, ids = data[0].splitlines(), data[1].splitlines()
     return intervals, ids
 
-# %%
+
 def is_in_interval(x: str, interval: str) -> bool:
     """
     Check if x is in "a-b", b included
     """
     from_, to_ = interval.split("-")
     return int(from_) <= int(x) <= int(to_)
-# %%
+
 def p1(data_path: str) -> int:
     """
     Loop through all ids and intervals and check if id is within
@@ -30,7 +29,7 @@ def p1(data_path: str) -> int:
                 num_fresh += 1
                 break
     return num_fresh
-# %%
+
 def convert_intervals_to_numbers(interval1: str, interval2: str) -> tuple[int, int, int, int]:
     int1_low, int1_high = interval1.split(sep="-")
     int2_low, int2_high = interval2.split(sep="-")
@@ -123,5 +122,3 @@ print(p1(data_path="aoc_2025/05/data/data1.txt"))
 print(p2(data_path="aoc_2025/05/data/data1.txt"))
 # %%
 %timeit p2(data_path="aoc_2025/05/data/data1.txt")
-
-# %%
