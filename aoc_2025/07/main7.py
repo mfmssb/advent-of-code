@@ -1,7 +1,4 @@
 # %%
-from typing import Any
-
-
 import os
 from pathlib import Path
 
