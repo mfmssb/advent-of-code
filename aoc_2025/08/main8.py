@@ -1,7 +1,6 @@
 # %%
 from pathlib import Path
 from itertools import combinations
-import pandas as pd
 
 def parse_data(data_path: str) -> list[tuple[int, ...]]:
     data: list[str] = Path(data_path).read_text().split("\n")
