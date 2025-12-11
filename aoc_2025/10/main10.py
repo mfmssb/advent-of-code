@@ -70,7 +70,12 @@ def p1(data_path) -> int:
 
     return sum_total_button_presses
 
-
 # %%
-%timeit p1("/home/onyxia/work/advent-of-code/aoc_2025/10/data/data1.txt")
+p1("/home/onyxia/work/advent-of-code/aoc_2025/10/data/data1.txt")
+# %%
+def p2(data_path):
+    
+    return
+
+p2("/home/onyxia/work/advent-of-code/aoc_2025/10/data/data1.txt")
 # %%
