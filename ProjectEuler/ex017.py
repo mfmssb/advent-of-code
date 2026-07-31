@@ -48,23 +48,20 @@ def _(num_lang):
         """
 
         nstr = str(n)
-
+        current_nstr = nstr
         res = ""
 
-        if n == 1000:
-            return "one thousand"
-    
-        while (len(nstr) > 0):
-            num_digits = len(nstr)
-            current_key = int(nstr)
-            current_digit = int(nstr[0])
+        while (len(current_nstr) > 0):
+            current_num_digits = len(current_nstr)
+            current_key = int(current_nstr)
+            current_digit = int(current_nstr[0])
             i = 0
             while True:
                 i += 1
                 if current_key <= 20:
-                    nstr = ""
+                    current_nstr = ""
                     break
-            
+        
                 if len(str(current_key)) > 1:
                     current_key = round(current_key // 10**i) * 10**i
 
@@ -72,40 +69,56 @@ def _(num_lang):
                     break
 
                 current_test_key = int("1" + str(current_key)[1:])
-            
+        
                 if num_lang.get(current_test_key):
                     current_key = current_test_key
                     break
-            
+        
                 if i > 3:
                     break
 
             if current_key == 0:
                 break
-            if len(nstr) > 2:
+            # print(n, res)
+            if len(current_nstr) > 2:
                 res += num_lang[current_digit] + " "
-            if len(nstr) < 2 and "and" not in res:
+            # print(res)
+            if current_num_digits == 2 and len(nstr) >= 3:
                 res += "and "
+            # print(res)
             res += num_lang[current_key] + " "
-            nstr = nstr[1:]
+            # print(res)
+            current_nstr = current_nstr[1:]
         return res.strip()
 
-    print(read_number(999))
-    print(read_number(115))
     return (read_number,)
 
 
 @app.cell
 def _(read_number):
-    read_number(30)
+    test_numbers = [4, 13, 99, 105, 184, 321, 444, 999, 1000]
+    for n in test_numbers:
+        print(f"{n:5}: {read_number(n)}")
+    return
+
+
+@app.cell
+def _():
+    # for num in range(1, 1001):
+    #     print(f"{num:5}: {read_number(num)}")
     return
 
 
 @app.cell
 def _(read_number):
-    test_numbers = [4, 13, 99, 105, 184, 321, 444, 999]
-    for n in test_numbers:
-        print(f"{n:5}: {read_number(n)}")
+    num_lang_list = [read_number(num).replace(" ", "") for num in range(1, 1001)]  # remove spaces
+    num_lang_list_lengths = [len(x) for x in num_lang_list]
+    return (num_lang_list_lengths,)
+
+
+@app.cell
+def _(num_lang_list_lengths):
+    print(sum(num_lang_list_lengths))
     return
 
 
