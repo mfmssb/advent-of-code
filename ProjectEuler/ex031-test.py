@@ -7,7 +7,7 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     STEPS = [5, 3, 1]
-    TARGET = 17
+    TARGET = 8
     return STEPS, TARGET
 
 
